@@ -119,7 +119,6 @@ export default function ScaleSuggesterWithTanpura() {
   const detector = useRef(null);
   const rafId = useRef(null);
   const tanpuraRef = useRef(null);
-
   useEffect(() => {
     return () => {
       if (rafId.current) {
@@ -260,18 +259,12 @@ export default function ScaleSuggesterWithTanpura() {
           >
             {isListening ? `Listening... ${countdown}` : 'Start'}
           </button>
-          {suggestedScale && (
-            <button
-              onClick={toggleTanpura}
-              style={{
-                ...styles.button,
-                ...(isTanpuraPlaying ? styles.tanpuraButtonPlaying : styles.tanpuraButton)
-              }}
-            >
-              {isTanpuraPlaying ? 'Stop Tanpura' : 'Play Tanpura'}
-            </button>
-          )}
         </div>
+        {suggestedScale && (
+            <Tanpura 
+            scale={suggestedScale?.split(' ')[0]?.charAt(0) + (suggestedScale?.split(' ')[0]?.charAt(1) === '#' ? '#' : '')}
+          />
+        )}
         <div style={{textAlign: 'center'}}>
           {error && <p style={styles.error}>{error}</p>}
           {suggestedScale && (
@@ -298,11 +291,6 @@ export default function ScaleSuggesterWithTanpura() {
           )}
         </div>
       </div>
-      <Tanpura 
-        scale={suggestedScale}
-        isPlaying={isTanpuraPlaying}
-        onPlayingChange={setIsTanpuraPlaying}
-      />
     </div>
   );
 }

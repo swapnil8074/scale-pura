@@ -1,78 +1,55 @@
-import React, { useEffect, useRef } from 'react';
-import * as Tone from 'tone';
+import React, { useState, useEffect } from 'react';
+import './Tanpura.css';  // Create this CSS file
 
-const Tanpura = ({ scale, isPlaying, onPlayingChange }) => {
-  const tanpuraRef = useRef(null);
+const Tanpura = ({ scale = 'C' }) => {
+  const [audio, setAudio] = useState(null);
+  const [isPlaying, setIsPlaying] = useState(false);
+
+  const startTanpura = async () => {
+    console.log('Starting tanpura with scale:', scale);
+    try {
+      if (!audio) {
+        const newAudio = new Audio(`${process.env.PUBLIC_URL}/scales/${scale}.mp3`);
+        newAudio.loop = true;
+        setAudio(newAudio);
+        await newAudio.play();
+      } else {
+        await audio.play();
+      }
+      setIsPlaying(true);
+    } catch (error) {
+      console.error('Error playing audio:', error);
+    }
+  };
+
+  const stopTanpura = () => {
+    if (audio) {
+      audio.pause();
+      setIsPlaying(false);
+    }
+  };
 
   useEffect(() => {
     return () => {
-      if (tanpuraRef.current) {
-        tanpuraRef.current.synth.dispose();
-        tanpuraRef.current.loop.dispose();
-        Tone.Transport.stop();
+      if (audio) {
+        audio.pause();
+        setAudio(null);
       }
     };
-  }, []);
+  }, [audio]);
 
-  useEffect(() => {
-    const setupTanpura = async () => {
-      try {
-        if (tanpuraRef.current) {
-          tanpuraRef.current.loop.stop();
-          tanpuraRef.current.synth.dispose();
-          tanpuraRef.current = null;
-        }
-
-        if (isPlaying && scale) {
-          if (Tone.context.state !== 'running') {
-            await Tone.start();
-          }
-
-          const [root] = scale.split(' ');
-          const rootNote = `${root}3`;
-          const fifthNote = `${root}4`;
-
-          const synth = new Tone.Synth({
-            oscillator: { 
-              type: 'sine',
-              volume: -10
-            },
-            envelope: { 
-              attack: 0.1,
-              decay: 0.2,
-              sustain: 1,
-              release: 0.8
-            }
-          }).toDestination();
-
-          const loop = new Tone.Loop(time => {
-            synth.triggerAttackRelease(rootNote, '2n', time);
-            synth.triggerAttackRelease(fifthNote, '2n', time + Tone.Time('2n'));
-          }, '1m').start(0);
-
-          tanpuraRef.current = { synth, loop };
-
-          if (Tone.Transport.state !== 'started') {
-            Tone.Transport.start();
-          }
-        } else {
-          if (tanpuraRef.current) {
-            tanpuraRef.current.loop.stop();
-            tanpuraRef.current.synth.dispose();
-            tanpuraRef.current = null;
-          }
-          Tone.Transport.stop();
-        }
-      } catch (error) {
-        console.error('Tanpura error:', error);
-        onPlayingChange(false);
-      }
-    };
-
-    setupTanpura();
-  }, [isPlaying, scale, onPlayingChange]);
-
-  return null;
+  return (
+    <div className="tanpura-container">
+      <div className="tanpura-controls">
+        <button 
+          className={`tanpura-button ${isPlaying ? 'playing' : ''}`}
+          onClick={isPlaying ? stopTanpura : startTanpura}
+        >
+          {isPlaying ? 'Stop' : 'Play'} Tanpura
+        </button>
+      </div>
+    </div>
+  );
 };
 
-export default Tanpura; 
+export default Tanpura;

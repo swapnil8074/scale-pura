@@ -1,0 +1,37 @@
+.tanpura-container {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  padding: 20px;
+  min-height: 100px;
+}
+
+.tanpura-controls {
+  text-align: center;
+}
+
+.tanpura-button {
+  padding: 12px 24px;
+  font-size: 16px;
+  border: none;
+  border-radius: 25px;
+  cursor: pointer;
+  background-color: #4CAF50;
+  color: white;
+  transition: all 0.3s ease;
+  box-shadow: 0 2px 5px rgba(0,0,0,0.2);
+}
+
+.tanpura-button:hover {
+  background-color: #45a049;
+  transform: translateY(-2px);
+  box-shadow: 0 4px 8px rgba(0,0,0,0.2);
+}
+
+.tanpura-button.playing {
+  background-color: #f44336;
+}
+
+.tanpura-button.playing:hover {
+  background-color: #da190b;
+} 
